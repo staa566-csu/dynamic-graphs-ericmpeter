@@ -1,0 +1,79 @@
+---
+title: "Dynamic Graphs"
+author: "Eric Peter"
+date: "9/26/2022"
+output: html_document
+---
+
+This dataset contains information regarding salaries of positions in data science fields around the world. Because salary is the only continuous data, we will focus on histograms and 
+```{r}
+library(dplyr)
+salaries <- read.csv("C:/Users/ericp/Documents/ds_salaries.csv")
+summary(salaries)
+```
+
+
+Since I am self-interested, I want to know salaries of entry level positions in the US. So we will filter those parameters.
+```{r}
+entryUS <- salaries %>% filter(company_location == "US" & experience_level == "EN")
+head(entryUS)
+```
+
+First we will look at the overall distribution of this data, with salary as the response variable.
+```{r}
+library(ggplot2)
+library(plotly)
+histGG <- ggplot(data = entryUS, mapping = aes(x = salary_in_usd/1000)) + geom_histogram(bins = 15) + theme_minimal() + xlab("Salary in USD in Thousands") + labs(title="Distribution of Salary for Entry Level Data Scientists in the US")
+ggplotly(histGG)
+```
+
+Clearly, there is not much data in this subset, so we will just look at companies in the United States.
+```{r}
+library(ggplot2)
+library(plotly)
+histGG <- ggplot(data = salaries, mapping = aes(x = salary_in_usd/1000, fill = experience_level, alpha = 0.3)) + geom_density() + theme_minimal() + xlab("Salary in USD in Thousands") + labs(title="Distribution of Salaries for Data Scientists in the US")
+ggplotly(histGG)
+```
+
+I am also interested in how remote work affects salary, based on experience level. EN: Entry-level / Junior; MI: Mid-level / Intermediate; SE: Senior-level / Expert; EX: Executive-level / Director
+```{r}
+salaryUS <- salaries %>% filter(company_location == "US") %>% arrange(desc(experience_level))
+ggTime <- ggplot(data = salaryUS, mapping = aes(x = remote_ratio, y = salary_in_usd/1000), color = experience_level) +
+  geom_point(alpha = .3) +
+  xlab("Ratio of Work Done Remote") +
+  ylab("Salary in USD in Thousands") +
+  theme_minimal() + 
+  facet_wrap(. ~ experience_level) +
+  labs(title = "How does experience level and remote work impact salary?")
+ggplotly(ggTime)
+```
+
+I've also heard a lot of varying advice regarding the size of company you should work for as a new grad. Let's take a look at salaries as they relate to company size. S: less than 50 employees; M: 50 to 250 employees; L: more than 250 employees (large).
+
+```{r}
+salarySize <- salaries %>% filter(company_location == "US") 
+salarySize$company_size <- factor(salarySize$company_size, levels=c("S","M","L"))
+ggTime <- ggplot(data = salaryUS, mapping = aes(x = company_size, y = salary_in_usd/1000, color = experience_level)) + geom_point(alpha = 0.3) + theme_minimal() + ylab("Salary in USD in Thousands") + xlab("Company Size") + labs(title = "Company size vs Salary (USD)")
+ggplotly(ggTime)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
