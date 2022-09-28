@@ -5,7 +5,7 @@ date: "9/26/2022"
 output: html_document
 ---
 
-This dataset contains information regarding salaries of positions in data science fields around the world. Because salary is the only continuous data, we will focus on histograms and 
+This dataset contains information regarding salaries of positions in data science fields around the world.
 ```{r}
 library(dplyr)
 salaries <- read.csv("C:/Users/ericp/Documents/ds_salaries.csv")
